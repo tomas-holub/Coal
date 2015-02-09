@@ -1,4 +1,5 @@
-var coal = (function () {
+
+    var coal = (function () {
 
         function Scope() {
             this.$$watchers = [];
@@ -104,7 +105,10 @@ var coal = (function () {
                                     if (typeof values[model] !== 'undefined') {
                                         values[model].innerHTML = newValue;
                                     }
-                                    handler(scope, model);
+                                    if (el.value !== newValue) {
+                                        el.value = newValue;
+                                    }
+                                    handler(scope, model, newValue, oldValue);
                                 }
                         );
 
