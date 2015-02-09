@@ -123,10 +123,6 @@
 
 
         function init(element) {
-            if (typeof element === 'undefined') {
-                element = document;
-            }
-
             return new App(element, new Scope());
         }
 
