@@ -105,9 +105,6 @@
                                     if (typeof values[model] !== 'undefined') {
                                         values[model].innerHTML = newValue;
                                     }
-                                    if (el.value !== newValue) {
-                                        el.value = newValue;
-                                    }
                                     handler(scope, model, newValue, oldValue);
                                 }
                         );
