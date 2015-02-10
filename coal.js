@@ -1,5 +1,4 @@
-
-    /**
+        /**
          * Coal.js
          * Version: 0.1
          * Author: Tomas Holub
@@ -75,6 +74,21 @@
                     CHECKBOX: 'change'
                 }
                 var values = {};
+
+                var watchHandler = function(scope,model,handler) {
+                    scope.$watch(
+                        function (scope) {
+                            return scope[model];
+                        },
+                        function (newValue, oldValue, scope) {
+                            if (typeof values[model] !== 'undefined') {
+                                values[model].innerHTML = newValue;
+                            }
+                            handler(scope, model, newValue, oldValue);
+                        }
+                    );
+                }
+
                 for (var i = 0; i < elems.length; i++) {
 
                     if (elems[i].getAttribute("data-co-value") != null) {
@@ -90,17 +104,8 @@
                             } else {
                                 scope[model] = el.value;
                             }
-                            scope.$watch(
-                                function (scope) {
-                                    return scope[model];
-                                },
-                                function (newValue, oldValue, scope) {
-                                    if (typeof values[model] !== 'undefined') {
-                                        values[model].innerHTML = newValue;
-                                    }
-                                    handler(scope, model, newValue, oldValue);
-                                }
-                            );
+
+                            watchHandler(scope,model,handler);
 
                             var event = events[el.tagName];
                             if (el.tagName === 'INPUT' && el.type === 'checkbox') {
@@ -116,8 +121,27 @@
                                 scope.$digest();
                             }
 
+
+
                         }(elems[i], this.handler));
                     }
+
+                    if (elems[i].getAttribute("data-co-click") != null) {
+                        (function(el, handler){
+                            var method = el.getAttribute("data-co-click");
+                            var FN_ARGS = /^\s*[^\(]*\(\s*([^\)]*)\)/m;
+                            var methodName = method.match(/[^(]*/i)[0];
+                            var args = method.match(FN_ARGS)[1].replace(/\s+/g,'').split(',');
+
+                            el['onclick'] = function () {
+                                if (typeof scope[methodName] === 'function') {
+                                    scope[methodName].apply(scope[methodName], args);
+                                }
+                            }
+
+                        }(elems[i], this.handler))
+                    }
+
                 }
 
                 // init scope values
