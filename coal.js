@@ -132,11 +132,26 @@
                             var FN_ARGS = /^\s*[^\(]*\(\s*([^\)]*)\)/m;
                             var methodName = method.match(/[^(]*/i)[0];
                             var args = method.match(FN_ARGS)[1].replace(/\s+/g,'').split(',');
+                            var model = methodName + '_' + i;
+
+                            scope[model] = true;
+
+                            scope.$watch(
+                                function (scope) {
+                                    return scope[model];
+                                },
+                                function (newValue, oldValue, scope) {
+                                    scope[model] = false;
+                                    handler(scope, model, newValue, oldValue);
+                                }
+                            );
 
                             el['onclick'] = function () {
                                 if (typeof scope[methodName] === 'function') {
                                     scope[methodName].apply(scope[methodName], args);
+                                    scope[model] = true;
                                 }
+                                scope.$digest();
                             }
 
                         }(elems[i], this.handler))
